@@ -27,7 +27,9 @@ public class CustomerService {
         // Check if the userId already exists
         Optional<Customer> existingCustomer = customerRepository.getCustomerByUserId(customer.getUserId());
         if (existingCustomer.isPresent()) {
-            return ResponseEntity.status(422).body("This user ID already exists in the system.");
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", "This ISBN already exists in the system.");
+            return ResponseEntity.status(422).body(errorResponse);
         }
 
         // Save customer and check if the insert was successful

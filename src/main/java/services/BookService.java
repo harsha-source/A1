@@ -11,6 +11,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import repositories.BookRepository;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -23,7 +25,9 @@ public class BookService {
         // Check if the ISBN already exists
         Optional<Books> existingBook = Optional.ofNullable(bookRepository.getBookByISBN(book.getISBN()));
         if (existingBook.isPresent()) {
-            return ResponseEntity.status(422).body("This ISBN already exists in the system.");
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", "This ISBN already exists in the system.");
+            return ResponseEntity.status(422).body(errorResponse);
         }
 
         // Save new book
