@@ -35,10 +35,6 @@ public class BookRepository {
         return jdbcTemplate.update("UPDATE books SET title=?, author=?, description=?, genre=?, price=?, quantity=? WHERE ISBN=?",
                 book.getTitle(), book.getAuthor(), book.getDescription(), book.getGenre(), book.getPrice(), book.getQuantity(), book.getISBN());
     }
-
-//    public Books getBookByISBN(String isbn) {
-//        return jdbcTemplate.queryForObject("SELECT * FROM books WHERE ISBN=?", bookRowMapper, isbn);
-//    }
     public Books getBookByISBN(String isbn) {
         String sql = "SELECT * FROM books WHERE ISBN = ?";
         List<Books> books = jdbcTemplate.query(sql, new Object[]{isbn}, new BeanPropertyRowMapper<>(Books.class));
