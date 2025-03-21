@@ -4,12 +4,14 @@ package models;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 @Data
 public class Books {
 
     @NotBlank
+    @JsonProperty("ISBN")
     private String ISBN;
 
     @NotBlank
@@ -17,6 +19,7 @@ public class Books {
 
 
     @NotBlank(message = "Author cannot be null")
+    @JsonProperty("Author")
     private String author;
 
     @NotBlank

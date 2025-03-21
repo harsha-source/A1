@@ -29,6 +29,8 @@ public class CustomerService {
 
             // Save customer and check if the insert was successful
             int rowsAffected = customerRepository.addCustomer(customer);
+            long id = customerRepository.getCustomerByUserId(customer.getUserId()).get().getId();
+            customer.setId(id);
             if (rowsAffected > 0) {
                 return customer;
             } else {
@@ -53,31 +55,35 @@ public class CustomerService {
                         .body("Invalid customer ID.");
             }
 
-            return customer.map(ResponseEntity::ok)
+            return customer.<ResponseEntity<?>>map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                            .body((Customer) Map.of("error", "Customer not found")));
+                            .body(Map.of("error", "Customer not found")));
         }
 
 
-        public ResponseEntity<?> getCustomerByUserId(String userId) {
-            Optional<Customer> customer;
-            if (userId == null || userId.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(Map.of("error", "Invalid customer ID"));
-            }
-            try {
-                customer = customerRepository.getCustomerByUserId(userId);
-            } catch (EmptyResultDataAccessException e) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("Customer with  User ID " + userId + " not found.");
-            } catch (IllegalArgumentException e) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Invalid customer ID.");
-            }
-
-            return customer.map(ResponseEntity::ok)
-                    .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                            .body((Customer) Map.of("error", "Customer not found")));
+    public ResponseEntity<?> getCustomerByUserId(String userId) {
+        if (userId == null || userId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "Invalid customer ID"));
         }
+
+        Optional<Customer> customer;
+        try {
+            customer = customerRepository.getCustomerByUserId(userId);
+        } catch (EmptyResultDataAccessException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Customer with User ID " + userId + " not found."));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "Invalid customer ID."));
+        }
+
+        return customer.<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "Customer not found")));
+    }
+
+
+
 }
 

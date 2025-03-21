@@ -1,6 +1,7 @@
 package controllers;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import models.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ public class CustomerController {
 
     // Retrieve Customer by user ID
     @GetMapping
-    public ResponseEntity<?> getCustomerByUserId(@RequestParam String userId) {
+    public ResponseEntity<?> getCustomerByUserId(@RequestParam @Email String userId) {
         return customerService.getCustomerByUserId(userId);
     }
 }
