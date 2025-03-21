@@ -28,6 +28,10 @@ public class BookService {
     }
 
     public ResponseEntity<?> updateBook(String isbn, @Valid Books book) {
+
+        if(!book.getISBN().equals(isbn)) {
+            return ResponseEntity.status(400).body("ISBN does not match.");
+        }
         // Find existing book by ISBN
         Optional<Books> existingBook = Optional.ofNullable(bookRepository.getBookByISBN(isbn));
         if (!existingBook.isPresent()) {
