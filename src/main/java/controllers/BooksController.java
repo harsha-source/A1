@@ -25,7 +25,7 @@ public class BooksController {
 
     // Update Book
     @PutMapping("/{isbn}")
-    public ResponseEntity<?> updateBook(@PathVariable String isbn, @RequestBody Books book) {
+    public ResponseEntity<?> updateBook(@PathVariable String isbn, @RequestBody @Valid Books book) {
         return bookService.updateBook(isbn, book);
     }
 

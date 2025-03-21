@@ -48,6 +48,9 @@ public class BookService {
 
     public ResponseEntity<?> getBookByIsbn(String isbn) {
         Optional<Books> book = Optional.ofNullable(bookRepository.getBookByISBN(isbn));
+        if (!book.isPresent()) {
+            return ResponseEntity.status(404).body("ISBN not found.");
+        }
         return ResponseEntity.status(200).body(book);
     }
 }

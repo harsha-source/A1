@@ -25,7 +25,7 @@ public class Books {
     @NotBlank
     private String genre;
 
-
+    @DecimalMin("0.00")
     @Digits(integer = 6, fraction = 2)
     @NotNull(message = "Price cannot be null")
     private double price;
