@@ -6,8 +6,11 @@ import models.Books;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.util.UriComponentsBuilder;
 import repositories.BookRepository;
 
+import java.net.URI;
 import java.util.Optional;
 
 @Service
@@ -16,15 +19,26 @@ public class BookService {
     @Autowired(required = true)
     private BookRepository bookRepository;
 
-    public ResponseEntity<?> addBook(@Valid Books book) {
+    public ResponseEntity<?> addBook(@Valid @RequestBody Books book, UriComponentsBuilder uriBuilder) {
         // Check if the ISBN already exists
         Optional<Books> existingBook = Optional.ofNullable(bookRepository.getBookByISBN(book.getISBN()));
         if (existingBook.isPresent()) {
             return ResponseEntity.status(422).body("This ISBN already exists in the system.");
         }
+
         // Save new book
         bookRepository.addBook(book);
-        return ResponseEntity.status(201).body(book);
+
+        // Build the location URI for the header
+        URI location = uriBuilder
+                .path("/books/{isbn}")
+                .buildAndExpand(book.getISBN())
+                .toUri();
+
+        // Return 201 Created status, Location header, and book in body
+        return ResponseEntity
+                .created(location)
+                .body(book);
     }
 
     public ResponseEntity<?> updateBook(String isbn, @Valid Books book) {
@@ -47,7 +61,7 @@ public class BookService {
         updatedBook.setQuantity(book.getQuantity());
 
         bookRepository.updateBook(updatedBook);
-        return ResponseEntity.status(200).body(updatedBook);
+        return ResponseEntity.status(201).body(updatedBook);
     }
 
     public ResponseEntity<?> getBookByIsbn(String isbn) {

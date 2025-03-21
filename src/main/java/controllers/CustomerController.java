@@ -6,6 +6,7 @@ import models.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 import services.CustomerService;
 
 @RestController
@@ -17,13 +18,9 @@ public class CustomerController {
 
     // Add Customer
     @PostMapping
-    public ResponseEntity<?> addCustomer(@RequestBody @Valid Customer customer) {
-        try {
-            Customer savedCustomer = customerService.addCustomer(customer);
-            return ResponseEntity.status(201).body(savedCustomer);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(422).body(e.getMessage());
-        }
+    public ResponseEntity<?> addCustomer(@RequestBody @Valid Customer customer, UriComponentsBuilder uriBuilder) {
+            return customerService.addCustomer(customer,uriBuilder);
+
     }
 //     Retrieve Customer by ID
     @GetMapping("/{id}")

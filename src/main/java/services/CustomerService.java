@@ -6,8 +6,10 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.util.UriComponentsBuilder;
 import repositories.CustomerRepository;
 
+import java.net.URI;
 import java.util.*;
 
 @Service
@@ -20,24 +22,36 @@ public class CustomerService {
             this.customerRepository = customerRepository;
         }
 
-        public Customer addCustomer(Customer customer) {
-            // Check if the userId already exists
-            Optional<Customer> existingCustomer = customerRepository.getCustomerByUserId(customer.getUserId());
-            if (existingCustomer.isPresent()) {
-                throw new IllegalArgumentException("This user ID already exists in the system.");
-            }
 
-            // Save customer and check if the insert was successful
-            int rowsAffected = customerRepository.addCustomer(customer);
-            long id = customerRepository.getCustomerByUserId(customer.getUserId()).get().getId();
-            customer.setId(id);
-            if (rowsAffected > 0) {
-                return customer;
-            } else {
-                throw new RuntimeException("Failed to save customer");
-            }
+    public ResponseEntity<?> addCustomer(Customer customer, UriComponentsBuilder uriBuilder) {
+        // Check if the userId already exists
+        Optional<Customer> existingCustomer = customerRepository.getCustomerByUserId(customer.getUserId());
+        if (existingCustomer.isPresent()) {
+            return ResponseEntity.status(422).body("This user ID already exists in the system.");
         }
 
+        // Save customer and check if the insert was successful
+        int rowsAffected = customerRepository.addCustomer(customer);
+
+        if (rowsAffected > 0) {
+            // Get the generated ID from the database
+            long id = customerRepository.getCustomerByUserId(customer.getUserId()).get().getId();
+            customer.setId(id);
+
+            // Build the location URI for the header
+            URI location = uriBuilder
+                    .path("/customers/{id}")
+                    .buildAndExpand(id)
+                    .toUri();
+
+            // Return 201 Created status, Location header, and customer in body
+            return ResponseEntity
+                    .created(location)
+                    .body(customer);
+        } else {
+            throw new RuntimeException("Failed to save customer");
+        }
+    }
 
         public ResponseEntity<?> getCustomerById(Long id) {
             Optional<Customer> customer;

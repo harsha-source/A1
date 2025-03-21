@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 import services.BookService;
 
 
@@ -19,8 +20,8 @@ public class BooksController {
 
     // Add Book
     @PostMapping
-    public ResponseEntity<?> addBook(@RequestBody @Valid Books book) {
-        return bookService.addBook(book);
+    public ResponseEntity<?> addBook(@RequestBody @Valid Books book, UriComponentsBuilder uriBuilder) {
+        return bookService.addBook(book, uriBuilder);
     }
 
     // Update Book
