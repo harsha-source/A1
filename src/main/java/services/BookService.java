@@ -65,7 +65,7 @@ public class BookService {
         updatedBook.setQuantity(book.getQuantity());
 
         bookRepository.updateBook(updatedBook);
-        return ResponseEntity.status(201).body(updatedBook);
+        return ResponseEntity.status(200).body(updatedBook);
     }
 
     public ResponseEntity<?> getBookByIsbn(String isbn) {
