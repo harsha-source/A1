@@ -28,7 +28,7 @@ public class CustomerService {
         Optional<Customer> existingCustomer = customerRepository.getCustomerByUserId(customer.getUserId());
         if (existingCustomer.isPresent()) {
             Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", "This user ID already exists in the system");
+            errorResponse.put("message", "This user ID already exists in the system.");
             return ResponseEntity.status(422).body(errorResponse);
         }
 
